@@ -1,0 +1,5 @@
+module Text.Format.String where
+
+import {-# SOURCE #-} Text.Format.Common
+
+parseStripe :: ReadP (Stripe String)

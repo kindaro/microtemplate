@@ -1,0 +1,5 @@
+resolver: lts-11.6
+extra-deps:
+    - /home/kindaro/code/haskell-src/doctest
+    - /home/kindaro/code/haskell-src/doctest-discover
+    - test-invariant-0.4.5.0

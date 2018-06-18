@@ -1,0 +1,22 @@
+name: microtemplate
+version: 0.1.0.0
+license: ISC
+
+ghc-options: -Wall
+
+dependencies:
+    - base >= 4.8 && < 5
+
+library:
+    source-dirs:
+        - .
+
+tests:
+    doctest:
+        source-dirs: test
+        main: doctest-driver.hs
+        dependencies:
+            - base >4.8 && <5
+            - doctest
+            - doctest-discover
+            - test-invariant
