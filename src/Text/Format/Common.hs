@@ -1,11 +1,15 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Text.Format.Common where
 
 import Text.ParserCombinators.ReadP
 import Text.ParserCombinators.ReadP.Util
 import Data.String
+import Language.Haskell.TH.Syntax
+import Language.Haskell.TH.Lib
 
 import qualified Text.Format.String ()
 
@@ -73,3 +77,26 @@ newtype Format string = Format { _zebra :: [Stripe string] } deriving Show
 instance Read (Format a) => IsString (Format a) where
     fromString = read
 
+format :: Format string -> Q Exp
+format (Format xs') = do
+    let xs = zipWith enumerate xs' [1..]
+        len = length xs
+    undefined
+  where
+    enumerate :: Stripe string -> Int -> Stripe string
+    enumerate s i = case s of
+        White Curly  -> White $ CurlyInt i
+        White Square -> White $ SquareInt i
+        x -> x
+
+-- | Generate non-empty strings of length within [1..n].
+--
+-- λ names 2 ""
+-- ["a","aa","ba"..."za","b","ab"..."xz","yz","zz"]
+--
+nonEmptyStrings :: Int -> String -> [String]
+nonEmptyStrings 0 s = return s
+nonEmptyStrings n s = undefined
+  where
+    iterate :: String -> [String]
+    iterate s = [ c: s | c <- ['a'..'z'] ]

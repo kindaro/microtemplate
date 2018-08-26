@@ -10,6 +10,8 @@ There are a number of string templating engines in Haskell. To name a few:
 
 * `fmt`
 * `text-format`
+* `text-format-simple`
+* `formatting`
 
 Even more so in other widely used languages:
 

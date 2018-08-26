@@ -6,17 +6,27 @@ ghc-options: -Wall
 
 dependencies:
     - base >= 4.8 && < 5
+    - template-haskell
 
 library:
     source-dirs:
-        - .
+        - src
+    exposed-modules:
+        - Text.Format.Common
+        - Text.Format.String
 
 tests:
     doctest:
-        source-dirs: test
+        source-dirs: test/doctest
         main: doctest-driver.hs
         dependencies:
             - base >4.8 && <5
             - doctest
             - doctest-discover
             - test-invariant
+    program:
+        source-dirs: test/program
+        main: Program.hs
+        dependencies:
+            - microtemplate
+

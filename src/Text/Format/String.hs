@@ -4,8 +4,10 @@ module Text.Format.String where
 
 import Text.ParserCombinators.ReadP
 import Text.ParserCombinators.ReadP.Util
+import Language.Haskell.TH.Syntax
+import Language.Haskell.TH.Lib
 
-import {-# SOURCE #-} Text.Format.Common
+import {-# SOURCE #-} Text.Format.Common as Common
 
 
 instance Read (Stripe String) where
@@ -48,3 +50,6 @@ instance Read (Format String) where
 parseFormat :: ReadP (Format String)
 parseFormat = Format <$> do
     manyTill parseStripe eof
+
+format :: Format String -> Q Exp
+format = Common.format
