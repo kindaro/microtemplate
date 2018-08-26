@@ -8,46 +8,36 @@ module Experiment
 
 class Microtemplate micro
   where
-    (?..) :: String -> micro -> micro
-    (..?) :: micro -> String -> micro
-    infixl 2 ?..
+    (..?) :: String -> micro -> micro
+    (?..) :: micro -> String -> micro
     infixl 2 ..?
+    infixl 2 ?..
 
-instance {-# overlaps #-} Show show => Microtemplate (show -> String)
+instance Microtemplate String
   where
-    s ?.. m = \x -> s ++ m x
-    m ..? s = \x -> m x ++ s
+    s ..? m = s ++ m
+    m ?.. s = m ++ s
 
 -- |
--- λ "One: " ?.. show $ 1
+-- λ "One: " ..? show $ 1
 -- "One: 1"
 
 instance (Show show, Microtemplate micro) => Microtemplate (show -> micro)
   where
-    s ?.. m = \x -> s ?.. m x
-    m ..? s = \x -> m x ..? s
+    s ..? m = \x -> s ..? m x
+    m ?.. s = \x -> m x ?.. s
 
 -- |
--- λ ("Two: " ?.. (show .) . (+)) 1 1
+-- λ ("Two: " ..? (show .) . (+)) 1 1
 -- "Two: 2"
--- λ ("Three: " ?.. \x y z -> show $ x + y + z) 1 1 1
+-- λ ("Three: " ..? \x y z -> show $ x + y + z) 1 1 1
 -- "Three: 3"
 
-class Ellipsis left right out
-  where
-    (...) :: left -> right -> out
-    infixr 9 ...
+(...) :: (Microtemplate m, Show show) => String -> m -> show -> m
+s ... u = \x -> (s ++ show x) ..? u
 
-instance {-# overlaps #-} Show show => Ellipsis String String (show -> String)
-  where
-    s ... t = \x -> s ++ show x ++ t
-
-instance ( Show show
-         , Microtemplate micro
-         ) => Ellipsis String micro (show -> micro)
-  where
-    s ... m = \x -> s ++ show x ?.. m
+infixr 3 ...
 
 -- |
--- λ ("la" ... ("la" ... "fa" :: Int -> String)) (1 :: Int) (2 :: Int) :: String
+-- λ ("la" ... "la" ... "fa") 1 2
 -- "la1la2fa"
