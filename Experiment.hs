@@ -11,6 +11,9 @@ module Experiment
 
 import Data.Coerce
 
+-- $setup
+-- λ :set -XTypeApplications
+
 class Microtemplate micro
   where
     (..?) :: String -> micro -> micro
@@ -70,3 +73,21 @@ instance Functor (f a) => Functor (F' f a)
 -- |
 -- λ apple' (fmap show (F' (+))) 1 2
 -- "3"
+
+class StringMap f g a b
+  where
+    sfmap :: (a -> b) -> f -> g
+
+instance StringMap a b a b
+  where
+    sfmap f = f
+
+instance StringMap sm sm' a a' => StringMap (x -> sm) (x -> sm') a a'
+  where
+    sfmap f sm = \x -> sfmap f (sm x)
+
+-- |
+-- λ sfmap @(Integer -> Integer) @(Integer -> String) @Integer (("One" ++) . show) succ 1
+-- "One2"
+-- λ sfmap @(Integer -> Integer -> Integer) @(Integer -> Integer -> String) @Integer (("One" ++) . show) (+) 1 2
+-- "One3"
