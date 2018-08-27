@@ -46,7 +46,7 @@ newtype F a r = F { apple :: a -> r }
 
 instance Functor (F a)
   where
-    fmap f' (F f) = F $ \x -> (f' . f) x
+    fmap f' f = F $ \x -> fmap f' (apple f) x
 
 -- |
 -- λ fmap show succ 1
@@ -57,3 +57,9 @@ instance Functor (F a)
 newtype F' f a r = F' { apple' :: a -> f a r }
 
 instance Functor (f a) => Functor (F' f a)
+  where
+    fmap f' f = F' $ \x -> (fmap . fmap) f' (apple' f) x
+
+-- |
+-- λ apple' (fmap show (F' (+))) 1 2
+-- "3"
