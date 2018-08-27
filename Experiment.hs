@@ -41,3 +41,19 @@ infixr 3 ...
 -- |
 -- λ ("la" ... "la" ... "fa") 1 2
 -- "la1la2fa"
+
+newtype F a r = F { apple :: a -> r }
+
+instance Functor (F a)
+  where
+    fmap f' (F f) = F $ \x -> (f' . f) x
+
+-- |
+-- λ fmap show succ 1
+-- "2"
+-- λ apple (fmap show (F succ)) 1
+-- "2"
+
+newtype F' f a r = F' { apple' :: a -> f a r }
+
+instance Functor (f a) => Functor (F' f a)
