@@ -33,7 +33,7 @@ instance (Show show, Microtemplate micro) => Microtemplate (show -> micro)
 -- λ ("Three: " ..? \x y z -> show $ x + y + z) 1 1 1
 -- "Three: 3"
 
-(...) :: (Microtemplate m, Show show) => String -> m -> show -> m
+(...) :: (Microtemplate micro, Show show) => String -> micro -> show -> micro
 s ... u = \x -> (s ++ show x) ..? u
 
 infixr 3 ...
