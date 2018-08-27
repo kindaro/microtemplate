@@ -2,9 +2,14 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Experiment
   where
+
+import Data.Coerce
 
 class Microtemplate micro
   where
@@ -46,7 +51,8 @@ newtype F a r = F { apple :: a -> r }
 
 instance Functor (F a)
   where
-    fmap f' f = F $ \x -> fmap f' (apple f) x
+    fmap :: forall r r'. (r -> r') -> F a r -> F a r'
+    fmap f = coerce (fmap f :: (a -> r) -> (a -> r'))
 
 -- |
 -- λ fmap show succ 1
@@ -58,7 +64,8 @@ newtype F' f a r = F' { apple' :: a -> f a r }
 
 instance Functor (f a) => Functor (F' f a)
   where
-    fmap f' f = F' $ \x -> (fmap . fmap) f' (apple' f) x
+    fmap :: forall r r'. (r -> r') -> F' f a r -> F' f a r'
+    fmap f = coerce ((fmap . fmap) f :: (a -> f a r) -> (a -> f a r'))
 
 -- |
 -- λ apple' (fmap show (F' (+))) 1 2
