@@ -84,7 +84,7 @@ instance StringMap a b a b
 
 instance StringMap sm sm' a a' => StringMap (x -> sm) (x -> sm') a a'
   where
-    sfmap f sm = \x -> sfmap f (sm x)
+    sfmap f sm = sfmap f . sm
 
 -- |
 -- λ sfmap @(Integer -> Integer) @(Integer -> String) @Integer (("One" ++) . show) succ 1
