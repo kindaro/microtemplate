@@ -50,6 +50,22 @@ infixr 3 ...
 -- λ ("la" ... "la" ... "fa") 1 2
 -- "la1la2fa"
 
+class M ml mr mo
+  where
+    (-=-) :: ml -> mr -> mo
+
+instance Microtemplate mr => M String mr mr
+  where
+    s -=- m = s ..? m
+
+instance M ml mr mo => M (String -> ml) mr (String -> mo)
+  where
+    ml -=- mr = \s -> ml s -=- mr
+
+-- |
+-- λ putStrLn $ (((++) @Char) -=- ((++) @Char)) "Captain " "Pumpkin " "meows: " "Mek!"
+-- Captain Pumpkin meows: Mek!
+
 newtype F a r = F { apple :: a -> r }
 
 instance Functor (F a)
