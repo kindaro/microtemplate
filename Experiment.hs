@@ -66,6 +66,15 @@ instance M ml mr mo => M (String -> ml) mr (String -> mo)
 -- λ putStrLn $ (((++) @Char) -=- ((++) @Char)) "Captain " "Pumpkin " "meows: " "Mek!"
 -- Captain Pumpkin meows: Mek!
 
+(....) :: (Microtemplate r, M l r o) => l -> r -> String -> o
+l .... r = \x -> l -=- (show x ..? r)
+
+infixr 8 ....
+
+-- |
+-- λ putStrLn $ ("la " .... (" la " .... " fa" :: String -> String)) "a" "b"
+-- la "a" la "b" fa
+
 newtype F a r = F { apple :: a -> r }
 
 instance Functor (F a)
