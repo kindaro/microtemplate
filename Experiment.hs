@@ -5,6 +5,8 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE FunctionalDependencies #-}
 
 module Experiment
   where
@@ -50,7 +52,7 @@ infixr 3 ...
 -- λ ("la" ... "la" ... "fa") 1 2
 -- "la1la2fa"
 
-class M ml mr mo
+class M ml mr mo | ml mr -> mo
   where
     (-=-) :: ml -> mr -> mo
 
@@ -58,7 +60,7 @@ instance Microtemplate mr => M String mr mr
   where
     s -=- m = s ..? m
 
-instance M ml mr mo => M (String -> ml) mr (String -> mo)
+instance M ml mr mo => M (a -> ml) mr (a -> mo)
   where
     ml -=- mr = \s -> ml s -=- mr
 
@@ -66,14 +68,18 @@ instance M ml mr mo => M (String -> ml) mr (String -> mo)
 -- λ putStrLn $ (((++) @Char) -=- ((++) @Char)) "Captain " "Pumpkin " "meows: " "Mek!"
 -- Captain Pumpkin meows: Mek!
 
-(....) :: (Microtemplate r, M l r o) => l -> r -> String -> o
+(....) :: (Show show, Microtemplate r, M l r o) => l -> r -> show -> o
 l .... r = \x -> l -=- (show x ..? r)
 
 infixr 8 ....
 
 -- |
--- λ putStrLn $ ("la " .... (" la " .... " fa" :: String -> String)) "a" "b"
--- la "a" la "b" fa
+-- λ putStrLn $ ("la " .... (" la " .... " fa")) 1 2
+-- la 1 la 2 fa
+-- λ putStrLn $ ("la " .... " la " .... " fa") 1 2
+-- la 1 la 2 fa
+-- λ putStrLn $ (("la " .... " la ") .... " fa") 1 2
+-- la 2 la 1 fa
 
 newtype F a r = F { apple :: a -> r }
 
