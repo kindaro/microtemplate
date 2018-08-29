@@ -7,6 +7,7 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
 
 module Experiment
   where
@@ -36,6 +37,7 @@ instance (Show show, Microtemplate micro) => Microtemplate (show -> micro)
   where
     s ..? m = \x -> s ..? m x
     m ?.. s = \x -> m x ?.. s
+
 
 -- |
 -- λ ("Two: " ..? (show .) . (+)) 1 1
@@ -68,8 +70,8 @@ instance M ml mr mo => M (a -> ml) mr (a -> mo)
 -- λ putStrLn $ (((++) @Char) -=- ((++) @Char)) "Captain " "Pumpkin " "meows: " "Mek!"
 -- Captain Pumpkin meows: Mek!
 
-(....) :: (Show show, Microtemplate r, M l r o) => l -> r -> show -> o
-l .... r = \x -> l -=- (show x ..? r)
+l .... r = l -=- (\x -> show x ..? r)
+l ? r = l -=- ( ..? r)
 
 infixr 8 ....
 
@@ -79,7 +81,7 @@ infixr 8 ....
 -- λ putStrLn $ ("la " .... " la " .... " fa") 1 2
 -- la 1 la 2 fa
 -- λ putStrLn $ (("la " .... " la ") .... " fa") 1 2
--- la 2 la 1 fa
+-- la 1 la 2 fa
 
 newtype F a r = F { apple :: a -> r }
 
